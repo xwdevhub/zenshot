@@ -87,8 +87,8 @@ void StarterUI::Init()
 	memset(m_PressedKey, 0, sizeof(m_PressedKey));
 #endif // Q_OS_UNIX
 
-	createActions();
-	createTrayIcon();
+//	createActions();
+//	createTrayIcon();
 
 	setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::X11BypassWindowManagerHint);
 	setAttribute(Qt::WA_TranslucentBackground, true);

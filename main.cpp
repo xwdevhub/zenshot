@@ -102,10 +102,10 @@ int main(int argc, char *argv[])
     gdk_init(NULL, NULL);
 #endif // Q_OS_LINUX
 
-	if (!QSystemTrayIcon::isSystemTrayAvailable()) {
-		L_ERROR("system tray disabled");
-		return 1;
-	}
+//	if (!QSystemTrayIcon::isSystemTrayAvailable()) {
+//		L_ERROR("system tray disabled");
+//		return 1;
+//	}
 
     //加载并应用语言翻译界面
     QLocale locale;

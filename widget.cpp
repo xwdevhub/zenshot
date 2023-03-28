@@ -36,6 +36,8 @@ Widget::Widget(QWidget* parent)
     setWindowFlags(Qt::Tool);
     setAttribute(Qt::WA_TranslucentBackground);
 #endif // USE_SPDLOG_
+    setWindowFlags(Qt::Tool | Qt::FramelessWindowHint | Qt::X11BypassWindowManagerHint);
+    setAttribute(Qt::WA_TranslucentBackground, true);
 }
 
 Widget::~Widget()
