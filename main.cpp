@@ -138,11 +138,11 @@ int main(int argc, char *argv[])
     if(result != 0)
         return result;
 
-    a.setQuitOnLastWindowClosed(false);
+    a.setQuitOnLastWindowClosed(true);
 
     StarterUI ui(&local_server);
 	ui.show();
-
+    ui.SatrtShot();
     int ret = a.exec();
     return ret;
 }

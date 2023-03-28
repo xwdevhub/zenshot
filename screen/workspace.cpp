@@ -747,6 +747,24 @@ int Workspace::saveFolderImpl(QString folderPath)
     }
 }
 
+
+QString createMultipleFolder(QString createDir)
+{
+    QDir dir(createDir);
+    if (dir.exists(createDir)) {
+        return createDir;
+    }
+
+    QString parentDir = createMultipleFolder(createDir.mid(0, createDir.lastIndexOf('/')));
+    QString dirName = createDir.mid(createDir.lastIndexOf('/') + 1);
+    QDir parentPath(parentDir);
+    if (!dirName.isEmpty())
+    {
+        parentPath.mkpath(dirName);
+    }
+    return parentDir + "/" + dirName;
+}
+
 int Workspace::saveImpl()
 {
     bool toFile = false;
@@ -766,8 +784,13 @@ int Workspace::saveImpl()
             return Utils::ERROR_SAVE_FORMAT;
 
         //指定文件夹不存在，异常退出
-        if(dir.exists() == false)
-            return Utils::ERROR_SAVE_FOLDER;
+        if(dir.exists() == false){
+
+             L_DEBUG(dir.absolutePath().toStdString());
+             createMultipleFolder(dir.path());
+			 // return Utils::ERROR_SAVE_FOLDER;
+        }
+           
 
         //如文件已存在，先删除
         if(file.exists() == true)
@@ -802,7 +825,15 @@ int Workspace::saveImpl()
 void Workspace::save()
 {
     int result = saveImpl();
-    closeImpl(result);
+    L_FUNCTION();
+    emit quitShot(result);
+
+    disconnect(m_toolBar.get(), SIGNAL(createChanged(QString)), this, SLOT(createToolChanged(QString)));
+    disconnect(m_toolBar.get(), SIGNAL(download()), this, SLOT(download()));
+    disconnect(m_toolBar.get(), SIGNAL(closeProgram()), this, SLOT(close()));
+    disconnect(m_toolBar.get(), SIGNAL(save()), this, SLOT(save()));
+    QApplication::exit(1);
+    //closeImpl(result);
 }
 
 Tool *Workspace::createCreateToolFactory(QString shapeType)
@@ -858,6 +889,8 @@ void Workspace::closeImpl(int code)
     disconnect(m_toolBar.get(), SIGNAL(download()), this, SLOT(download()));
     disconnect(m_toolBar.get(), SIGNAL(closeProgram()), this, SLOT(close()));
     disconnect(m_toolBar.get(), SIGNAL(save()), this, SLOT(save()));
+    QApplication::exit(0);
+
 }
 
 void Workspace::close()
