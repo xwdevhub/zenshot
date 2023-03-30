@@ -55,6 +55,7 @@ SOURCES += \
     locators/pointlocator.cpp \
     locators/rectlocator.cpp \
     main.cpp \
+    client.cpp \
     preview/zentaobug.cpp \
     preview/zentaodemand.cpp \
     preview/zentaopreview.cpp \
@@ -188,6 +189,7 @@ HEADERS += \
     spdlogwrapper.hpp \
     starter.h \
     starterui.h \
+    client.h \
     stores/localstore.h \
     stores/memorystore.h \
     tools/arrowcreatetool.h \

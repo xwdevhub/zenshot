@@ -32,6 +32,7 @@
 #include "widget.h"
 #include "starterui.h"
 #include "starter.h"
+#include "client.h"
 #include "core/screeninfo.h"
 #include "screen/helper/screengetter.h"
 #include "core/gparams.h"
@@ -60,26 +61,53 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_WIN
     mkdir("logs");
 #else
-    mkdir("logs", S_IRWXU);
+    // mkdir("logs", S_IRWXU);
 #endif // Q_OS_WIN
-    spdlog::spdlog_init("zenshot", "logs/log.log", 23, 57, 1, 1);
-    L_TRACE("start");
+    //spdlog::spdlog_init("zenshot", "logs/log.log", 23, 57, 1, 1);
+    L_DEBUG("start1111");
 #endif // USE_SPDLOG_
 
-	QCoreApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
+    L_DEBUG("main222");
+    QCoreApplication::setAttribute(Qt::AA_UseSoftwareOpenGL);
 
     QApplication a(argc, argv);
     
     QLocalSocket local_sock;
     QLocalServer local_server;
+    // connect(local_sock,SIGNAL(connected()),this,SLOT(connect_success()));
+
+    L_DEBUG("kaishi ");
+
     local_sock.connectToServer(mutex_name);
     if (local_sock.waitForConnected(800))
     {
-        local_sock.disconnectFromServer();
-        local_sock.close();
+        L_DEBUG("receive data before111");
+        //接收到local_server发来的数据
 
-        L_TRACE("already running ...");
-        return 0;
+
+        //解析命令行参数
+        int result = GParams::instance()->fromArgs(argc,argv);
+
+        QString savePath=  GParams::instance()->save();
+        if(savePath==nullptr){
+            local_sock.disconnectFromServer();
+            local_sock.close();
+
+            L_TRACE("already running ...");
+            return 0;
+
+        }
+        QByteArray pkg;
+        pkg.append(savePath);
+        // pkg.append("hello world my name is swc");
+        local_sock.write(pkg);
+        Client c(&local_sock);
+
+
+
+        int ret = a.exec();
+        return ret;
+        //  return code;
     }
 
     QLocalServer::removeServer(mutex_name);
@@ -89,23 +117,23 @@ int main(int argc, char *argv[])
         return 0;
     }
 
-//     QString full_name = QDir::temp().absoluteFilePath(mutex_name);
-//     L_TRACE(full_name.toStdString().c_str());
-//     QLockFile file(full_name);
-//     if (!file.tryLock())
-//     {
-//         L_TRACE("already running ...");
-//         return 0;
-//     }
+    //    QString full_name = QDir::temp().absoluteFilePath(mutex_name);
+    //    L_TRACE(full_name.toStdString().c_str());
+    //    QLockFile file(full_name);
+    //    if (!file.tryLock())
+    //    {
+    //        L_TRACE("already running ...");
+    //        return 0;
+    //    }
 
 #ifdef Q_OS_UNIX
     gdk_init(NULL, NULL);
 #endif // Q_OS_LINUX
 
-//	if (!QSystemTrayIcon::isSystemTrayAvailable()) {
-//		L_ERROR("system tray disabled");
-//		return 1;
-//	}
+    //	if (!QSystemTrayIcon::isSystemTrayAvailable()) {
+    //		L_ERROR("system tray disabled");
+    //		return 1;
+    //	}
 
     //加载并应用语言翻译界面
     QLocale locale;
@@ -138,11 +166,11 @@ int main(int argc, char *argv[])
     if(result != 0)
         return result;
 
-    a.setQuitOnLastWindowClosed(true);
+    a.setQuitOnLastWindowClosed(false);
 
     StarterUI ui(&local_server);
-	ui.show();
-    ui.SatrtShot();
+    ui.show();
+    //ui.SatrtShot();
     int ret = a.exec();
     return ret;
 }

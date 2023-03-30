@@ -35,6 +35,7 @@ public:
     void cleanup();
 
     void rasie();
+    int m_exitCode;
 
 private:
     QList<Widget*>* m_widgets;

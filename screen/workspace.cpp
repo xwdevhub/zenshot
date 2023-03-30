@@ -88,7 +88,7 @@ Workspace::Workspace(QWidget *host)
 
 Workspace::~Workspace()
 {
-	L_FUNCTION();
+    L_FUNCTION();
 
     qDeleteAll(m_activeHandles);
     m_activeHandles.clear();
@@ -143,22 +143,22 @@ void Workspace::cleanup()
     L_FUNCTION();
 
     removeShape(m_selectedShape);
-	m_selectedShape = nullptr;
+    m_selectedShape = nullptr;
 
     UserOper::cleanAll();
-	
+
     if (m_toolBar != nullptr) {
-		m_toolBar->move(0, -1000);
-		m_toolBar->show();
-		m_toolBar->setVisible(false);
+        m_toolBar->move(0, -1000);
+        m_toolBar->show();
+        m_toolBar->setVisible(false);
 
         m_toolBar->cleanup();
     }
     
-	qDeleteAll(m_activeHandles);
-	m_activeHandles.clear();
+    qDeleteAll(m_activeHandles);
+    m_activeHandles.clear();
 
-	m_shapeList.clear();
+    m_shapeList.clear();
     
     m_shotArea.cleanup();
 
@@ -313,7 +313,7 @@ void Workspace::autoCapture()
 
 void Workspace::moveArea(QPoint offsetPoint)
 {
-   m_shotArea.move(offsetPoint);
+    m_shotArea.move(offsetPoint);
 }
 
 void Workspace::confirmArea()
@@ -359,8 +359,8 @@ void Workspace::draw(QPainter &painter)
     foreach(auto shape, m_shapeList)
     {
         if(shape == m_selectedShape &&
-           m_selectedShape->type() == Utils::forTextKey() &&
-           m_textAssist->editing() == true){
+                m_selectedShape->type() == Utils::forTextKey() &&
+                m_textAssist->editing() == true){
             continue;
         }
         shape->draw(painter);
@@ -450,15 +450,15 @@ void Workspace::addMosaic(std::shared_ptr<Shape> shape)
 void Workspace::removeShape(std::shared_ptr<Shape> shape,bool tempOper)
 {
     auto iter = std::find_if(m_shapeList.begin(), m_shapeList.end(), [=](std::shared_ptr<Shape> ptr)
-        {
-            return ptr == shape;
-        });
+    {
+        return ptr == shape;
+    });
     if (iter == m_shapeList.end())
     {
         return;
     }
 
-    if (!tempOper && m_selectedShape == shape) 
+    if (!tempOper && m_selectedShape == shape)
     {
         setSelected(nullptr);
     }
@@ -467,10 +467,10 @@ void Workspace::removeShape(std::shared_ptr<Shape> shape,bool tempOper)
 
 void Workspace::refreshProps()
 {
-//    if(m_textAssist->editing() == true)
-//    {
-//        m_textAssist->unAttach();
-//    }
+    //    if(m_textAssist->editing() == true)
+    //    {
+    //        m_textAssist->unAttach();
+    //    }
     if(m_selectedShape == nullptr)
     {
         L_DEBUG("{0} @ {1}: NO Selected Shape", __FUNCTION__, __LINE__);
@@ -479,22 +479,22 @@ void Workspace::refreshProps()
 
     L_DEBUG("{0} @ {1}: HAS Selected Shape", __FUNCTION__, __LINE__);
 
-	MemoryStore oldStore;
-	m_selectedShape->saveProps(&oldStore);
+    MemoryStore oldStore;
+    m_selectedShape->saveProps(&oldStore);
 
-	m_selectedShape->loadProps();
-	refreshDraw();
+    m_selectedShape->loadProps();
+    refreshDraw();
 
-	MemoryStore nowStore;
-	m_selectedShape->saveProps(&nowStore);
+    MemoryStore nowStore;
+    m_selectedShape->saveProps(&nowStore);
 
-	std::shared_ptr<PropsCommand> propsComm(new PropsCommand(this, m_selectedShape.get(), oldStore, nowStore));
-	UserOper::add(propsComm);
+    std::shared_ptr<PropsCommand> propsComm(new PropsCommand(this, m_selectedShape.get(), oldStore, nowStore));
+    UserOper::add(propsComm);
 
-	if (m_selectedShape->type() == Utils::forTextKey() && m_textAssist->editing() == true)
-	{
-		m_textAssist->refreshProps();
-	}
+    if (m_selectedShape->type() == Utils::forTextKey() && m_textAssist->editing() == true)
+    {
+        m_textAssist->refreshProps();
+    }
 }
 
 bool Workspace::hasCreateTool()
@@ -550,8 +550,8 @@ const QVector<Handle *>& Workspace::activeHandles() const
 void Workspace::normalbeforeUndo()
 {
     if(m_selectedShape != nullptr &&
-       m_selectedShape->type() == Utils::forTextKey() &&
-       m_textAssist->editing() == true)
+            m_selectedShape->type() == Utils::forTextKey() &&
+            m_textAssist->editing() == true)
     {
         m_textAssist->unAttach();
     }
@@ -773,6 +773,9 @@ int Workspace::saveImpl()
     //判断是否保存为指定的文件
     if(GParams::instance()->save() != nullptr)
     {
+        L_DEBUG("GParams::instance()->!= nullptr111111111111111111");
+        L_DEBUG(GParams::instance()->save().toStdString());
+        L_DEBUG("GParams::instance()->!= nullptrxxxxxxxxxxxxxxxxxxxxxxxxx");
         QFile file(GParams::instance()->save());
         QFileInfo fInfo(file);
         QDir dir = fInfo.dir();
@@ -786,17 +789,19 @@ int Workspace::saveImpl()
         //指定文件夹不存在，异常退出
         if(dir.exists() == false){
 
-             L_DEBUG(dir.absolutePath().toStdString());
-             createMultipleFolder(dir.path());
-			 // return Utils::ERROR_SAVE_FOLDER;
+            L_DEBUG(dir.absolutePath().toStdString());
+            createMultipleFolder(dir.path());
+            // return Utils::ERROR_SAVE_FOLDER;
         }
-           
+
 
         //如文件已存在，先删除
         if(file.exists() == true)
             file.remove();
 
         toFile = true;
+    }else{
+        L_DEBUG("GParams::instance()->save()  null");
     }
 
     //判断是否保存到剪贴板
@@ -826,13 +831,14 @@ void Workspace::save()
 {
     int result = saveImpl();
     L_FUNCTION();
-    emit quitShot(result);
+    emit quitShot(1);
 
     disconnect(m_toolBar.get(), SIGNAL(createChanged(QString)), this, SLOT(createToolChanged(QString)));
     disconnect(m_toolBar.get(), SIGNAL(download()), this, SLOT(download()));
     disconnect(m_toolBar.get(), SIGNAL(closeProgram()), this, SLOT(close()));
     disconnect(m_toolBar.get(), SIGNAL(save()), this, SLOT(save()));
-    QApplication::exit(1);
+    // exit(1);
+    // QApplication::exit(1);
     //closeImpl(result);
 }
 
@@ -885,11 +891,11 @@ void Workspace::closeImpl(int code)
     L_FUNCTION();
     emit quitShot(code);
 
-	disconnect(m_toolBar.get(), SIGNAL(createChanged(QString)), this, SLOT(createToolChanged(QString)));
+    disconnect(m_toolBar.get(), SIGNAL(createChanged(QString)), this, SLOT(createToolChanged(QString)));
     disconnect(m_toolBar.get(), SIGNAL(download()), this, SLOT(download()));
     disconnect(m_toolBar.get(), SIGNAL(closeProgram()), this, SLOT(close()));
     disconnect(m_toolBar.get(), SIGNAL(save()), this, SLOT(save()));
-    QApplication::exit(0);
+    // QApplication::exit(0);
 
 }
 

@@ -58,6 +58,10 @@ private slots:
 	void OnShotDone(Starter* starer);
 	void OnExitShot();
 	void OnShowSetting();
+    //新的 连接
+    void  OnNewConnection();
+    //  读数据
+    void OnReadyRead();
 
 	void OnIconActivated(QSystemTrayIcon::ActivationReason reason);
 #if !NZENTAO_VER_
@@ -150,6 +154,7 @@ private:
 	SettingDlg m_SettingDlg;
 	
 	QLocalServer* m_LocalServer;
+    QLocalSocket* newsocket;
 }; // StarterUI
 
 extern StarterUI* g_start_ui_;
